@@ -19,11 +19,9 @@ void restore_sram() {
 }
 
 extern UINT8 erase_flash();
-extern UINT8 save_sram_bank(UINT8 bank);
+extern UINT8 save_sram_bank();
 
 UINT8 save_sram() {
     if (!erase_flash()) return 0;
-    for (UINT8 i = 0; i < 4; i++)
-        if (!save_sram_bank(i)) return 0; 
-    return 1;
+    return save_sram_bank();
 }
