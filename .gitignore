@@ -1,0 +1,12 @@
+/obj
+/unused
+/proto
+*.bak
+*.map
+*.sym
+__pycache__
+*.ihx
+*.noi
+/.vscode
+/*.cdb
+@usage.bat
