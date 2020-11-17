@@ -84,6 +84,8 @@ _flash_data_routine:
 
 	ld	e, #1			; success
 5$:
+	.wb	#0x4000 #0xF0		; reset?
+
 	.wb	#.ENABLE_RAM_MBC5 #0x0A	; enable SRAM back
 
 	pop	af
@@ -151,7 +153,7 @@ _erase_flash_sector_routine:
 	
 	.wb	#.MBC1_ROM_PAGE (#_save_rom_bank)
 
-	.wb	#0x4000 #0xF0
+	.wb	#0x4000 #0xF0		; reset?
 	.wb	#0x0AAA #0xA9
 	.wb	#0x0555 #0x56
 	.wb	#0x0AAA #0x80
