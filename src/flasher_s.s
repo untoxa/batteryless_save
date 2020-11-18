@@ -33,7 +33,7 @@ _flash_data_routine:
 	add	(hl)
 	ld	(#.MBC1_ROM_PAGE), a	; switch ROM bank
 
-	ld	h, #0x40
+	ld	h, #0x40		; two SRAM banks are saved into one ROM bank.
 	bit	0, c
 	jr	z,0$
 	set	5, h 
@@ -59,7 +59,7 @@ _flash_data_routine:
 	ld	a, b
 	ld	(hl), a			; write byte
 
-	ld	b, #0			; wait counter 256 times
+	ld	b, #0			; wait counter
 2$:
 	cp	(hl)
 	jr	z, 3$			; check byte
@@ -111,8 +111,8 @@ _save_sram_bank::
 	push 	de
 	push 	hl
 	call	_memcpy			; copy routine onto stack
-	pop	bc
-	add	sp, #4			; remove src, len and low byte of de above
+	pop	bc			; address of the routine on stack
+	add	sp, #4			; remove src and len
 
 	ld	a, #3
 1$:
@@ -121,7 +121,7 @@ _save_sram_bank::
 	ld	h, b
 	ld	l, c
 	inc	sp
-	rst	0x20
+	rst	0x20			; call routine, bc is preserved
 	dec	sp
 
 	ld	a, e
@@ -161,7 +161,7 @@ _erase_flash_sector_routine:
 	.wb	#0x0555 #0x56
 	.wb	#0x4000 #0x30		; perform magic
 
-	ld	de, #0			; wait counter 256 times
+	ld	de, #0			; wait counter
 1$:
 	ld	a, (#0x4000)
 	cp	#0xFF
@@ -198,7 +198,7 @@ _erase_flash::
 	push 	de
 	push 	hl
 	call	_memcpy			; copy routine onto stack
-	pop	hl
+	pop	hl			; address of the routine on stack
 	add	sp, #4			; remove src, len
 
 	rst	0x20			; call routine on stack using call hl
