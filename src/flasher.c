@@ -18,10 +18,10 @@ void restore_sram() {
         restore_sram_bank(i);
 }
 
-extern UINT8 erase_flash();
-extern UINT8 save_sram_bank();
+extern UINT8 erase_flash();                 // erases FLASH sector: 64K or 4 banks
+extern UINT8 save_sram_banks(UINT8 count);  // copies up to count SRAM banks to FLASH
 
 UINT8 save_sram() {
     if (!erase_flash()) return 0;
-    return save_sram_bank();
+    return save_sram_banks(4);
 }
