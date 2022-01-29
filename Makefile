@@ -10,7 +10,7 @@ CFLAGS = -Iinclude
 LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4 -Wl-j
 LFLAGS_STARTSAVE = -Wl-g.start_save=$(START_SAVE)
 
-LFLAGS = -Wl-yt0x1A $(LFLAGS_NBANKS) $(LFLAGS_STARTSAVE)
+LFLAGS = -Wm-yS -Wl-yt0x1A $(LFLAGS_NBANKS) $(LFLAGS_STARTSAVE)
 
 TARGET = $(ROM_BUILD_DIR)/rom.gb
 
@@ -19,7 +19,7 @@ CSRC = $(foreach dir,src,$(notdir $(wildcard $(dir)/*.c)))
 
 OBJS = $(CSRC:%.c=$(OBJDIR)/%.o) $(ASRC:%.s=$(OBJDIR)/%.o)
 
-all:	$(TARGET) symbols
+all:	color $(TARGET)
 
 .PHONY: clean release debug color profile
 
@@ -35,7 +35,7 @@ debug:
 
 color:
 	$(eval CFLAGS += -DCGB)
-	$(eval LFLAGS += -Wm-yC)
+	$(eval LFLAGS += -Wm-yc)
 	@echo "COLOR mode ON"
 
 profile:
@@ -60,6 +60,3 @@ clean:
 	rm -rf $(ROM_BUILD_DIR)
 
 rom: $(ROM_BUILD_DIR)/game.gb
-
-symbols:
-	python ./utils/noi2sym.py $(patsubst %.gb,%.noi,$(TARGET)) >$(patsubst %.gb,%.sym,$(TARGET))

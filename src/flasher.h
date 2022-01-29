@@ -1,11 +1,11 @@
 #ifndef __FLASHER_H_INCLUDE
 #define __FLASHER_H_INCLUDE
 
-#include <gb/gb.h>
+#include <stdint.h>
 
-void restore_sram_bank(UINT8 bank);
+void restore_sram_bank(uint8_t bank);
 void restore_sram();
 
-UINT8 save_sram();
+uint8_t save_sram();
 
 #endif
