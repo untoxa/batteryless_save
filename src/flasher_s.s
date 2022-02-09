@@ -1,5 +1,5 @@
-		.include "global.s"
-		
+                .include "global.s"
+                
         .globl  .start_save
         .globl __current_bank
         .globl _memcpy
@@ -29,7 +29,7 @@ _flash_data_routine:
         ld      hl, #_save_rom_bank
         srl     a
         add     (hl)
-        ld      (#rROMB0), a            		; switch ROM bank
+        ld      (#rROMB0), a                    ; switch ROM bank
 
         ld      h, #0x40                        ; two SRAM banks are saved into one ROM bank.
         bit     0, c
@@ -43,12 +43,12 @@ _flash_data_routine:
         ld      e, a
 
 1$:
-        .wb     #rRAMG, #0x0A        			; enable SRAM
-        .wb     #rRAMB, c              			; switch SRAM
+        .wb     #rRAMG, #0x0A                   ; enable SRAM
+        .wb     #rRAMB, c                       ; switch SRAM
         ld      a, (de)                         ; read byte
         ld      b, a
 
-        .wb     #rRAMG, #0x00        			; disable SRAM
+        .wb     #rRAMG, #0x00                   ; disable SRAM
 
         .wb     #0x0AAA, #0xA9
         .wb     #0x0555, #0x56
@@ -84,10 +84,10 @@ _flash_data_routine:
 5$:
         .wb     #0x4000, #0xF0                  ; reset?
 
-        .wb     #rRAMG, #0x0A        			; enable SRAM back
+        .wb     #rRAMG, #0x0A                   ; enable SRAM back
 
         pop     af
-        ld      (#rROMB0), a            		; restore bank
+        ld      (#rROMB0), a                    ; restore bank
 
         ei 
 
@@ -153,7 +153,7 @@ _erase_flash_sector_routine:
         ldh     a, (#__current_bank)
         push    af                              ; save current bank
 
-        .wb     #rRAMG, #0x00        			; disable SRAM
+        .wb     #rRAMG, #0x00                   ; disable SRAM
         
         .wb     #rROMB0, (#_save_rom_bank)
 
@@ -186,10 +186,10 @@ _erase_flash_sector_routine:
 2$:
         ld      e, #1                           ; success
 3$:
-        .wb     #rRAMG, #0x0A        			; enable SRAM back
+        .wb     #rRAMG, #0x0A                   ; enable SRAM back
 
         pop     af
-        ld      (#rROMB0), a            		; restore bank
+        ld      (#rROMB0), a                    ; restore bank
 
         ei
 
