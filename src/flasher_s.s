@@ -1,11 +1,12 @@
-                .include "global.s"
+        .include "global.s"
                 
         .globl  .start_save
         .globl __current_bank
 
         .area   _CODE
 
-_save_rom_bank:: .db .start_save
+_save_rom_bank:: 
+        .db .start_save
 
 .macro .wb addr, val
         ld a, val
@@ -96,8 +97,7 @@ _flash_data_routine:
 _end_flash_data_routine:
 
 _save_sram_banks::
-        push    bc                              ; save bc
-        lda     hl, 4(sp)
+        lda     hl, 2(sp)
         ld      b, (hl)
 
         lda     hl, 0(sp)
@@ -146,8 +146,6 @@ _save_sram_banks::
 
         pop     hl
         ld      sp, hl
-
-        pop     bc                              ; restore bc
 
         ret
 
