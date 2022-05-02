@@ -2,7 +2,6 @@
                 
         .globl  .start_save
         .globl __current_bank
-        .globl _memcpy
 
         .area   _CODE
 
@@ -97,28 +96,32 @@ _flash_data_routine:
 _end_flash_data_routine:
 
 _save_sram_banks::
-        push    bc
+        push    bc                              ; save bc
         lda     hl, 4(sp)
         ld      b, (hl)
+
+        lda     hl, 0(sp)
+        ld      d, h
+        ld      e, l                            ; de = sp
 
         ld      hl, #(_flash_data_routine - _end_flash_data_routine)
         add     hl, sp
         ld      sp, hl                          ; allocate ram on stack for the routine
-        
-        ld      de, #(_end_flash_data_routine - _flash_data_routine)
         push    de
-        ld      de, #_flash_data_routine
-        push    de
-        push    hl
-        call    _memcpy                         ; copy routine onto stack
-        ld      a, b
-        pop     bc                              ; address of the routine on stack
-        add     sp, #4                          ; remove src and len
 
-        ld      e, #0
+        push    hl                              ; save routine address
+
+        ld      c, #(_end_flash_data_routine - _flash_data_routine)
+        ld      de, #_flash_data_routine
+        rst     0x30                            ; copy up to 256 bytes in C from DE to HL
+
+        ld      a, b
+        pop     bc                              ; restore routine address into bc
+
+        ld      e, #0                           ; result
         sub     #1
-        jr      c, 3$
-        and     #3
+        jr      c, 3$                           ; copy zero banks?
+        and     #3                              ; max 4 banks
 1$:
         push    af
 
@@ -140,11 +143,12 @@ _save_sram_banks::
 2$:
         pop     af
 3$:
-        ld      hl, #(_end_flash_data_routine - _flash_data_routine)
-        add     hl, sp
+
+        pop     hl
         ld      sp, hl
 
-        pop     bc
+        pop     bc                              ; restore bc
+
         ret
 
 _erase_flash_sector_routine:
@@ -197,23 +201,25 @@ _erase_flash_sector_routine:
 _end_erase_flash_sector_routine:
 
 _erase_flash::
+        lda     hl, 0(sp)
+        ld      d, h
+        ld      e, l                            ; de = sp
+
         ld      hl, #(_erase_flash_sector_routine - _end_erase_flash_sector_routine)
         add     hl, sp
         ld      sp, hl                          ; allocate ram on stack for the routine
 
-        ld      de, #(_end_erase_flash_sector_routine - _erase_flash_sector_routine)
-        push    de
-        ld      de, #_erase_flash_sector_routine
         push    de
         push    hl
-        call    _memcpy                         ; copy routine onto stack
-        pop     hl                              ; address of the routine on stack
-        add     sp, #4                          ; remove src, len
 
+        ld      c, #(_end_erase_flash_sector_routine - _erase_flash_sector_routine)
+        ld      de, #_erase_flash_sector_routine
+        rst     0x30                            ; copy up to 256 bytes in C from DE to HL
+
+        pop     hl
         rst     0x20                            ; call routine on stack using call hl
 
-        ld      hl, #(_end_erase_flash_sector_routine - _erase_flash_sector_routine)
-        add     hl, sp
+        pop     hl
         ld      sp, hl
 
         ret
